@@ -489,11 +489,11 @@ void applyKnuthAlgo(IncidenceMatrix& matrix, std::vector<std::string>& solution,
 		return;
 	};
 
-	NodeColumn* column(std::move(matrix.findColumnWithLeastOnes()));
+	NodeColumn* column(matrix.findColumnWithLeastOnes());
 	if(column->getSize() == 0) return;
 	matrix.cover(column);
 
-	for(NodeBase* row(std::move(column->getDown())); row != column; row = std::move(row->getDown())) {
+	for(NodeBase* row(column->getDown()); row != column; row = std::move(row->getDown())) {
 		std::stringstream buff;
 		buff << *row;
 		solution[k] = buff.str();
@@ -503,7 +503,7 @@ void applyKnuthAlgo(IncidenceMatrix& matrix, std::vector<std::string>& solution,
 
 		applyKnuthAlgo(matrix, solution, counter, k+1);
 
-		for(NodeBase* rowTraverse(std::move(row->getLeft())); rowTraverse != row; rowTraverse = std::move(rowTraverse->getLeft())) {
+		for(NodeBase* rowTraverse(row->getLeft()); rowTraverse != row; rowTraverse = rowTraverse->getLeft()) {
 			matrix.uncover(rowTraverse->getColumnRef());
 		}
 	}
@@ -535,6 +535,6 @@ void handler(int sig) {
 
 int main(int, char**) {
 	signal(SIGSEGV, handler);
-	solve({6, 10});
+	solve({4, 15});
 	return 0;
 }
