@@ -15,3 +15,7 @@
 # vim
 *.swo
 *.swp
+
+# Binaries
+out/*
+.ycm_extra_conf.pyc

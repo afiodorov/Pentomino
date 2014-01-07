@@ -349,8 +349,8 @@ class IncidenceMatrix {
 			int arrIndex = 0;
 			NodeColumn* headNotes = ptrsArr.get(); 
 			stackOfColumnsArr.push(std::move(ptrsArr));
-			NodeColumn* headNode = headNotes + arrIndex++;
 
+			NodeColumn* headNode = headNotes + arrIndex++;
 			headNode->name = "head";
 			headerRow.addRowNode(headNode);
 			map["head"] = headNode;
