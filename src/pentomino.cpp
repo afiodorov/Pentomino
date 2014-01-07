@@ -388,6 +388,12 @@ class IncidenceMatrix {
 					while(x < rectangle.first) {
 						int y = 0;
 						while(y < rectangle.second) {
+					 		// confining X to lower quarter-plane
+					 		if(shape.first == "X") {
+								if((x > rectangle.first / 2) || (y > rectangle.second / 2))
+									break;
+					 		}
+
 							Pentomino movedPentomino = pentomino.shift({x, y});
 							std::vector<int> shapeSerialised;
 							bool isFitted =
@@ -493,7 +499,7 @@ void applyKnuthAlgo(IncidenceMatrix& matrix, std::vector<std::string>& solution,
 	if(column->getSize() == 0) return;
 	matrix.cover(column);
 
-	for(NodeBase* row(column->getDown()); row != column; row = std::move(row->getDown())) {
+	for(NodeBase* row(column->getDown()); row != column; row = row->getDown()) {
 		std::stringstream buff;
 		buff << *row;
 		solution[k] = buff.str();
@@ -535,6 +541,6 @@ void handler(int sig) {
 
 int main(int, char**) {
 	signal(SIGSEGV, handler);
-	solve({4, 15});
+	solve({5, 12});
 	return 0;
 }
