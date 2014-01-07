@@ -176,11 +176,11 @@ class NodeColumn : public NodeBase {
 			return size;
         }
 
-        void increaseSize() {
+        void inline increaseSize() {
 			size++;
         }
 
-        void decreaseSize() {
+        void inline decreaseSize() {
 			assert(size > 0);
 			size--;
         }
@@ -271,7 +271,7 @@ class IncidenceMatrix {
 
 			NodeColumn* column = headerRow.firstNode->right;
 			while(column != headerRow.firstNode) {
-				if(column->getSize() < min) minColumn = column;
+				if(column->size < min) minColumn = column;
 				column = column->right;
 			}
 			return minColumn;
@@ -328,6 +328,16 @@ class IncidenceMatrix {
 		std::stack<std::unique_ptr<NodeBase[]>> stackOfNodesArr;
 		std::stack<std::unique_ptr<NodeColumn[]>> stackOfColumnsArr;
 		
+		int findColumnSize(NodeColumn*& column) {
+			int result = 0;
+			NodeBase* runner(column);
+			while(runner != column) {
+				result++;
+				runner = runner->down;
+			}
+			return result;
+		}
+
 		template<typename T>
 		void addingNodeProcedure(T*& node) {
 				node->column->increaseSize();
@@ -485,11 +495,12 @@ class IncidenceMatrix {
 		}
 };
 
-void applyKnuthAlgo(IncidenceMatrix& matrix, std::vector<std::string>& solution, int& counter, int k=0) {
+void applyKnuthAlgo(IncidenceMatrix& matrix, std::vector<NodeBase*>& solution, int& counter, int k=0) {
 	if(matrix.getHead()->isCircular()) {
-		for(auto str : solution) {
-			std::cout << str << std::endl;
+		for(auto row : solution) {
+			std::cout << *row << std::endl;
 		}
+		std::cout << "Number of solutions found so far: " << counter << std::endl;
 		std::cout << std::endl;
 		counter++;
 		return;
@@ -500,9 +511,7 @@ void applyKnuthAlgo(IncidenceMatrix& matrix, std::vector<std::string>& solution,
 	matrix.cover(column);
 
 	for(NodeBase* row(column->getDown()); row != column; row = row->getDown()) {
-		std::stringstream buff;
-		buff << *row;
-		solution[k] = buff.str();
+		solution[k] = row;
 		for(NodeBase* rowTraverse = row->getRight(); rowTraverse != row; rowTraverse = rowTraverse->getRight()) {
 			matrix.cover(rowTraverse->getColumnRef());
 		}
@@ -519,7 +528,7 @@ void applyKnuthAlgo(IncidenceMatrix& matrix, std::vector<std::string>& solution,
 void solve(std::pair<int,int> rectangle) {
     IncidenceMatrix matrix(rectangle);
     int counter = 0;
-	std::vector<std::string> solution = std::vector<std::string>(rectangle.first*rectangle.second/5, "");
+	auto solution = std::vector<NodeBase*>(rectangle.first*rectangle.second/5, nullptr);
     applyKnuthAlgo(matrix, solution, counter);
 	std::cout << "Found " << counter << " solutions" << std::endl;
 }
