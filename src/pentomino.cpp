@@ -532,6 +532,6 @@ void handler(int sig) {
 
 int main(int, char**) {
 	signal(SIGSEGV, handler);
-	solve({6,10});
+	solve({5,12});
 	return 0;
 }
