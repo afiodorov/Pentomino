@@ -153,14 +153,14 @@ class NodeColumn : public NodeBase {
     friend IncidenceMatrix;
     public:
         NodeColumn() : NodeBase(), size(0) {
-        	up = this;
-        	down = this;
-        	column = this;
+			up = this;
+			down = this;
+			column = this;
         };
         NodeColumn(std::string name) : NodeBase(), name(name), size(0) {
-        	up = this;
-        	down = this;
-        	column = this;
+			up = this;
+			down = this;
+			column = this;
         };
 
 		bool isCircular() {
@@ -173,16 +173,16 @@ class NodeColumn : public NodeBase {
         }
 
         int getSize() {
-        	return size;
+			return size;
         }
 
         void increaseSize() {
-        	size++;
+			size++;
         }
 
         void decreaseSize() {
-        	assert(size > 0);
-        	size--;
+			assert(size > 0);
+			size--;
         }
 
 		NodeColumn* getRight() {
@@ -246,14 +246,14 @@ class DoublyLinkedList {
         T* lastNode; 
 
 		std::ostream& show(std::ostream& out) const {
-        	auto node = firstNode;
-        	if(!firstNode) return out;
+			auto node = firstNode;
+			if(!firstNode) return out;
 
-        	while(node != lastNode) {
-        		out << node->column->getName() << " ";
-        		node = node->right;
-        	}
-        	return out << lastNode->column->getName() << std::endl;
+			while(node != lastNode) {
+				out << node->column->getName() << " ";
+				node = node->right;
+			}
+			return out << lastNode->column->getName() << std::endl;
         }
 };
 
@@ -388,11 +388,11 @@ class IncidenceMatrix {
 					while(x < rectangle.first) {
 						int y = 0;
 						while(y < rectangle.second) {
-					 		// confining X to lower quarter-plane
-					 		if(shape.first == "X") {
+							// confining X to lower quarter-plane
+							if(shape.first == "X") {
 								if((x > rectangle.first / 2) || (y > rectangle.second / 2))
 									break;
-					 		}
+							}
 
 							Pentomino movedPentomino = pentomino.shift({x, y});
 							std::vector<int> shapeSerialised;
@@ -406,7 +406,7 @@ class IncidenceMatrix {
 											&& (pair.first < rectangle.first)
 											&& (pair.second < rectangle.second);
 									});
-					 		y++;
+							y++;
 							if(!isFitted) continue;
 
 							std::sort(shapeSerialised.begin(), shapeSerialised.end());
