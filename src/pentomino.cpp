@@ -328,6 +328,7 @@ class IncidenceMatrix {
 	private:
 		std::map<std::string, Pentomino> shapes;
 		std::stack<std::unique_ptr<NodeBase>> stackOfNodes;
+		std::stack<std::unique_ptr<NodeBase[]>> stackOfNodesArr;
 		
 		void createHeader() {
 			shapes = {{"X", X}, {"Z", Z}, {"I", I}, {"T", T}, {"U", U},
@@ -403,20 +404,21 @@ class IncidenceMatrix {
 
 							std::sort(shapeSerialised.begin(), shapeSerialised.end());
 							DoublyLinkedList<NodeBase> list;
+
+							std::unique_ptr<NodeBase[]> uArr(new NodeBase[6]); 
+							NodeBase* arr = uArr.get();
+							stackOfNodesArr.push(std::move(uArr));
+							int arrIndex = 0;
 							for_each(shapeSerialised.begin(), shapeSerialised.end(), 
-									[&list, this](int& integer) {
+									[&list, this, &arrIndex, &arr](int& integer) {
 								std::string str = std::to_string(integer);
-								auto uNode = std::unique_ptr<NodeBase>(new NodeBase);
-								auto node = uNode.get();
-								stackOfNodes.push(std::move(uNode));
+								auto node = (arr + arrIndex++);
 
 								node->column = map[str];
 								list.addRowNode(node);
 							});
 
-							auto uNode = std::unique_ptr<NodeBase>(new NodeBase);
-							auto node = uNode.get();
-							stackOfNodes.push(std::move(uNode));
+							auto node = (arr + arrIndex);
 							node->column = map[shape.first];
 							list.addRowNode(node);
 							addRow(list);
@@ -532,6 +534,6 @@ void handler(int sig) {
 
 int main(int, char**) {
 	signal(SIGSEGV, handler);
-	solve({5,12});
+	solve({2,10});
 	return 0;
 }
