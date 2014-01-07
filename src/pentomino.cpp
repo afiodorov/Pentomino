@@ -152,7 +152,16 @@ class NodeColumn : public NodeBase {
     friend DoublyLinkedList<NodeColumn>;
     friend IncidenceMatrix;
     public:
-        NodeColumn(std::string name_) : NodeBase(), name(name_), size(0) {};
+        NodeColumn() : NodeBase(), size(0) {
+        	up = this;
+        	down = this;
+        	column = this;
+        };
+        NodeColumn(std::string name) : NodeBase(), name(name), size(0) {
+        	up = this;
+        	down = this;
+        	column = this;
+        };
 
 		bool isCircular() {
 			return (right == this);
@@ -262,13 +271,13 @@ class IncidenceMatrix {
 
 			NodeColumn* column = headerRow.firstNode->right;
 			while(column != headerRow.firstNode) {
-				if(column->column->getSize() < min) minColumn = column;
+				if(column->getSize() < min) minColumn = column;
 				column = column->right;
 			}
 			return minColumn;
 		}
 
-		NodeColumn* getHead() {
+		NodeColumn* const&  getHead() {
 			return headerRow.firstNode;
 		}
 
@@ -278,20 +287,9 @@ class IncidenceMatrix {
 
 			T* node = row.firstNode;
 			while(node != row.lastNode) {
-				node->column->increaseSize();
-				auto nodeAbove = node->column->up;
-				node->up = nodeAbove;
-				node->down = node->column;
-				nodeAbove->down = node;
-				node->column->up = node;
-				node = node->right;
+				addingNodeProcedure(node);
 			}
-			row.lastNode->column->increaseSize();
-			auto nodeAbove = row.lastNode->column->up;
-			row.lastNode->up = nodeAbove;
-			row.lastNode->down = row.lastNode->column;
-			nodeAbove->down = row.lastNode;
-			row.lastNode->column->up = row.lastNode;
+			addingNodeProcedure(row.lastNode);
 		}
 
 		void cover(NodeColumn*& column) {
@@ -327,49 +325,52 @@ class IncidenceMatrix {
 
 	private:
 		std::map<std::string, Pentomino> shapes;
-		std::stack<std::unique_ptr<NodeBase>> stackOfNodes;
 		std::stack<std::unique_ptr<NodeBase[]>> stackOfNodesArr;
+		std::stack<std::unique_ptr<NodeColumn[]>> stackOfColumnsArr;
 		
+		template<typename T>
+		void addingNodeProcedure(T*& node) {
+				node->column->increaseSize();
+				auto nodeAbove = node->column->up;
+				node->up = nodeAbove;
+				node->down = node->column;
+				nodeAbove->down = node;
+				node->column->up = node;
+				node = node->right;
+		}
+
 		void createHeader() {
 			shapes = {{"X", X}, {"Z", Z}, {"I", I}, {"T", T}, {"U", U},
 					{"V", V}, {"W", W}, {"F", F}, {"L", L}, {"P", P}, {"N", N},
 					{"Y", Y}};
 
-			auto uHeadNode = std::unique_ptr<NodeColumn>(new NodeColumn("head"));
-			auto headNode = uHeadNode.get();
-			stackOfNodes.push(std::move(uHeadNode));
+			const int headerSize = rectangle.first * rectangle.second + shapes.size() + 1;
+			std::unique_ptr<NodeColumn[]> ptrsArr(new NodeColumn[headerSize]);
+			int arrIndex = 0;
+			NodeColumn* headNotes = ptrsArr.get(); 
+			stackOfColumnsArr.push(std::move(ptrsArr));
+			NodeColumn* headNode = headNotes + arrIndex++;
 
-			headNode->column = headNode;
-			headNode->up = headNode;
-			headNode->down = headNode;
+			headNode->name = "head";
 			headerRow.addRowNode(headNode);
 			map["head"] = headNode;
 
 			for(int i = 0; i < rectangle.first * rectangle.second; i++) {
 				std::string currentName  = std::to_string(i);
-				auto uColumnNode = std::unique_ptr<NodeColumn>(new NodeColumn(currentName));
-				auto columnNode = uColumnNode.get();
-				stackOfNodes.push(std::move(uColumnNode));
-
-				columnNode->column = columnNode;
-				columnNode->up = columnNode;
-				columnNode->down = columnNode;
+				NodeColumn* columnNode = headNotes + arrIndex++;
+				columnNode->name = currentName;
 				headerRow.addRowNode(columnNode);
 				map[currentName] = columnNode;
 			}
 
 			for(auto shape : shapes) {
-				auto uColumnNode = std::unique_ptr<NodeColumn>(new NodeColumn(shape.first));
-				auto columnNode = uColumnNode.get();
-				stackOfNodes.push(std::move(uColumnNode));
-
-				columnNode->column = columnNode;
-				columnNode->up = columnNode;
-				columnNode->down = columnNode;
+				NodeColumn* columnNode = headNotes + arrIndex++;
+				columnNode->name = shape.first;
 				headerRow.addRowNode(columnNode);
 				map[shape.first] = columnNode;
 			}
 		}
+
 		std::map<std::string, NodeColumn*> map;
 		DoublyLinkedList<NodeColumn> headerRow;
 		std::pair<int,int> rectangle;
@@ -534,6 +535,6 @@ void handler(int sig) {
 
 int main(int, char**) {
 	signal(SIGSEGV, handler);
-	solve({2,10});
+	solve({6, 10});
 	return 0;
 }
