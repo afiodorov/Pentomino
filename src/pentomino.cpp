@@ -14,6 +14,8 @@
 #include <stack>
 #include <limits>
 #include <sstream>
+#include <ctime>
+#include <chrono>
 
 // no luck with switch on strings in C++
 constexpr unsigned int str2int(const char* str, int h = 0)
@@ -302,7 +304,7 @@ class IncidenceMatrix {
 						rowTraverse = rowTraverse->right) {
 					rowTraverse->up->down = rowTraverse->down;
 					rowTraverse->down->up = rowTraverse->up;
-					rowTraverse->column->decreaseSize();
+					// rowTraverse->column->decreaseSize();
 				}
 			}
 		}
@@ -317,7 +319,7 @@ class IncidenceMatrix {
 						rowTraverse = rowTraverse->left) {
 					rowTraverse->up->down = rowTraverse;
 					rowTraverse->down->up = rowTraverse;
-					rowTraverse->column->increaseSize();
+					// rowTraverse->column->increaseSize();
 				}
 			}
 		}
@@ -400,8 +402,10 @@ class IncidenceMatrix {
 						while(y < rectangle.second) {
 							// confining X to lower quarter-plane
 							if(shape.first == "X") {
-								if((x > rectangle.first / 2) || (y > rectangle.second / 2))
-									break;
+								if(shape.second.cs[3].first + x >
+										ceil(rectangle.first / 2.0) ) break;
+								if(shape.second.cs[4].second + y >
+										ceil(rectangle.second / 2.0) ) break;
 							}
 
 							Pentomino movedPentomino = pentomino.shift({x, y});
@@ -500,13 +504,14 @@ void applyKnuthAlgo(IncidenceMatrix& matrix, std::vector<NodeBase*>& solution, i
 		for(auto row : solution) {
 			std::cout << *row << std::endl;
 		}
-		std::cout << "Number of solutions found so far: " << counter << std::endl;
-		std::cout << std::endl;
 		counter++;
+		// std::cout << "Number of solutions found so far: " << counter << std::endl;
+		std::cout << std::endl;
 		return;
 	};
 
-	NodeColumn* column(matrix.findColumnWithLeastOnes());
+	// NodeColumn* column(matrix.findColumnWithLeastOnes());
+	NodeColumn* column(matrix.getHead()->getRight());
 	if(column->getSize() == 0) return;
 	matrix.cover(column);
 
@@ -526,14 +531,24 @@ void applyKnuthAlgo(IncidenceMatrix& matrix, std::vector<NodeBase*>& solution, i
 }
 
 void solve(std::pair<int,int> rectangle) {
+	std::chrono::time_point<std::chrono::system_clock> start, matrixGenFinished, end;
+    start = std::chrono::system_clock::now();
     IncidenceMatrix matrix(rectangle);
+    matrixGenFinished = std::chrono::system_clock::now();
+
     int counter = 0;
 	auto solution = std::vector<NodeBase*>(rectangle.first*rectangle.second/5, nullptr);
     applyKnuthAlgo(matrix, solution, counter);
-	std::cout << "Found " << counter << " solutions" << std::endl;
+
+	end = std::chrono::system_clock::now();
+
+	std::chrono::duration<double> matrixElapsedSeconds = matrixGenFinished-start;
+	std::chrono::duration<double> elapsedSeconds = end-matrixGenFinished;
+
+    std::cout << "Found " << counter << " solutions" << std::endl;
+    std::cout << "Matrix generation time: " << matrixElapsedSeconds.count() << std::endl;
+    std::cout << "Elapsed time: " << elapsedSeconds.count() << std::endl;
 }
-
-
 
 void handler(int sig) {
   void *array[10];
@@ -550,6 +565,6 @@ void handler(int sig) {
 
 int main(int, char**) {
 	signal(SIGSEGV, handler);
-	solve({5, 12});
+	solve({6, 10});
 	return 0;
 }
