@@ -20,7 +20,7 @@
 // no luck with switch on strings in C++
 constexpr unsigned int str2int(const char* str, int h = 0)
 {
-    return !str[h] ? 5381 : (str2int(str, h+1)*33) ^ str[h];
+	return !str[h] ? 5381 : (str2int(str, h+1)*33) ^ str[h];
 }
 
 
@@ -106,9 +106,9 @@ class IncidenceMatrix;
 class NodeColumn;
 
 class NodeBase {
-    friend DoublyLinkedList<NodeBase>;
-    friend DoublyLinkedList<NodeColumn>;
-    friend IncidenceMatrix;
+	friend DoublyLinkedList<NodeBase>;
+	friend DoublyLinkedList<NodeColumn>;
+	friend IncidenceMatrix;
 	friend inline std::ostream& operator<<(std::ostream& out,
 			NodeBase& node) {
 		return node.show(out);
@@ -141,29 +141,29 @@ class NodeBase {
 
 	std::ostream& show(std::ostream&);
 
-    protected:
+	protected:
 		NodeBase *up, *down;
 
 	private:
 		NodeColumn* column;
-        NodeBase *left, *right;
+		NodeBase *left, *right;
 };
 
 class NodeColumn : public NodeBase {
-    friend DoublyLinkedList<NodeBase>;
-    friend DoublyLinkedList<NodeColumn>;
-    friend IncidenceMatrix;
-    public:
-        NodeColumn() : NodeBase(), size(0) {
+	friend DoublyLinkedList<NodeBase>;
+	friend DoublyLinkedList<NodeColumn>;
+	friend IncidenceMatrix;
+	public:
+		NodeColumn() : NodeBase(), size(0) {
 			up = this;
 			down = this;
 			column = this;
-        };
-        NodeColumn(std::string name) : NodeBase(), name(name), size(0) {
+		};
+		NodeColumn(std::string name) : NodeBase(), name(name), size(0) {
 			up = this;
 			down = this;
 			column = this;
-        };
+		};
 
 		bool isCircular() {
 			return (right == this);
@@ -172,20 +172,20 @@ class NodeColumn : public NodeBase {
 
 		std::string getName() {
 			return name;
-        }
+		}
 
-        int getSize() {
+		int getSize() {
 			return size;
-        }
+		}
 
-        void inline increaseSize() {
+		void inline increaseSize() {
 			size++;
-        }
+		}
 
-        void inline decreaseSize() {
+		void inline decreaseSize() {
 			assert(size > 0);
 			size--;
-        }
+		}
 
 		NodeColumn* getRight() {
 			return right;
@@ -209,7 +209,7 @@ class NodeColumn : public NodeBase {
 
 	private:
 		NodeColumn* column;
-        NodeColumn* left, *right;
+		NodeColumn* left, *right;
 };
 
 std::ostream& NodeBase::show(std::ostream& out) {
@@ -229,23 +229,23 @@ class DoublyLinkedList {
 		return list.show(out);
 	}
 	
-    public:
-        DoublyLinkedList() : firstNode(nullptr), lastNode(nullptr) {}
-        T* addRowNode(T* node) {
-            if(lastNode) {
-                lastNode->right = node;
-                node->left = lastNode;
-                lastNode = lastNode->right;
-            } else {
-                firstNode = lastNode = node;
-            }
-            firstNode->left = lastNode;
-            lastNode->right = firstNode;
-            return lastNode;
-        }
-    private:
-        T* firstNode; 
-        T* lastNode; 
+	public:
+		DoublyLinkedList() : firstNode(nullptr), lastNode(nullptr) {}
+		T* addRowNode(T* node) {
+			if(lastNode) {
+				lastNode->right = node;
+				node->left = lastNode;
+				lastNode = lastNode->right;
+			} else {
+				firstNode = lastNode = node;
+			}
+			firstNode->left = lastNode;
+			lastNode->right = firstNode;
+			return lastNode;
+		}
+	private:
+		T* firstNode; 
+		T* lastNode; 
 
 		std::ostream& show(std::ostream& out) const {
 			auto node = firstNode;
@@ -256,7 +256,7 @@ class DoublyLinkedList {
 				node = node->right;
 			}
 			return out << lastNode->column->getName() << std::endl;
-        }
+		}
 };
 
 class IncidenceMatrix {
@@ -279,7 +279,7 @@ class IncidenceMatrix {
 			return minColumn;
 		}
 
-		NodeColumn* const&  getHead() {
+		NodeColumn* const&	getHead() {
 			return headerRow.firstNode;
 		}
 
@@ -529,22 +529,22 @@ void applyKnuthAlgo(IncidenceMatrix& matrix, std::vector<NodeBase*>& solution, i
 
 void solve(std::pair<int,int> rectangle) {
 	std::chrono::time_point<std::chrono::system_clock> start, matrixGenFinished, end;
-    start = std::chrono::system_clock::now();
-    IncidenceMatrix matrix(rectangle);
-    matrixGenFinished = std::chrono::system_clock::now();
+	start = std::chrono::system_clock::now();
+	IncidenceMatrix matrix(rectangle);
+	matrixGenFinished = std::chrono::system_clock::now();
 
-    int counter = 0;
+	int counter = 0;
 	auto solution = std::vector<NodeBase*>(rectangle.first*rectangle.second/5, nullptr);
-    applyKnuthAlgo(matrix, solution, counter);
+	applyKnuthAlgo(matrix, solution, counter);
 
 	end = std::chrono::system_clock::now();
 
 	std::chrono::duration<double> matrixElapsedSeconds = matrixGenFinished-start;
 	std::chrono::duration<double> elapsedSeconds = end-matrixGenFinished;
 
-    std::cout << "Found " << counter << " solutions" << std::endl;
-    std::cout << "Matrix generation time: " << matrixElapsedSeconds.count() << " seconds" << std::endl;
-    std::cout << "Elapsed time: " << elapsedSeconds.count() << " seconds" << std::endl;
+	std::cout << "Found " << counter << " solutions" << std::endl;
+	std::cout << "Matrix generation time: " << matrixElapsedSeconds.count() << " seconds" << std::endl;
+	std::cout << "Elapsed time: " << elapsedSeconds.count() << " seconds" << std::endl;
 }
 
 void handler(int sig) {
@@ -559,7 +559,6 @@ void handler(int sig) {
   backtrace_symbols_fd(array, size, STDERR_FILENO);
   exit(1);
 }
-
 
 int main(int, char**) {
 	signal(SIGSEGV, handler);
