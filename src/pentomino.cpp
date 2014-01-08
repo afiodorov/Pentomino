@@ -502,9 +502,8 @@ void applyKnuthAlgo(IncidenceMatrix& matrix, std::vector<NodeBase*>& solution, i
 		for(auto row : solution) {
 			std::cout << *row << std::endl;
 		}
-		counter++;
-		// std::cout << "Number of solutions found so far: " << counter << std::endl;
 		std::cout << std::endl;
+		counter++;
 		return;
 	};
 
@@ -544,8 +543,8 @@ void solve(std::pair<int,int> rectangle) {
 	std::chrono::duration<double> elapsedSeconds = end-matrixGenFinished;
 
     std::cout << "Found " << counter << " solutions" << std::endl;
-    std::cout << "Matrix generation time: " << matrixElapsedSeconds.count() << std::endl;
-    std::cout << "Elapsed time: " << elapsedSeconds.count() << std::endl;
+    std::cout << "Matrix generation time: " << matrixElapsedSeconds.count() << " seconds" << std::endl;
+    std::cout << "Elapsed time: " << elapsedSeconds.count() << " seconds" << std::endl;
 }
 
 void handler(int sig) {

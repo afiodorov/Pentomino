@@ -59,8 +59,8 @@ Output example:
 	55 56 57 58 59 I
 
 	Found 2339 solutions
-	Matrix generation time: 0.0122784
-	Elapsed time: 27.5229
+	Matrix generation time: 0.0122784 seconds
+	Elapsed time: 27.5229 seconds
 
 [pent]: http://en.wikipedia.org/wiki/Pentomino
 [dlx]: http://en.wikipedia.org/wiki/Dancing_Links
