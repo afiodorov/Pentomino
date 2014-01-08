@@ -402,10 +402,8 @@ class IncidenceMatrix {
 						while(y < rectangle.second) {
 							// confining X to lower quarter-plane
 							if(shape.first == "X") {
-								if(shape.second.cs[3].first + x >
-										ceil(rectangle.first / 2.0) ) break;
-								if(shape.second.cs[4].second + y >
-										ceil(rectangle.second / 2.0) ) break;
+								if(1.5 + x > rectangle.first / 2.0) break;
+								if(1.5 + y > rectangle.second / 2.0) break;
 							}
 
 							Pentomino movedPentomino = pentomino.shift({x, y});
