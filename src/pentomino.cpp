@@ -560,6 +560,7 @@ void handler(int sig) {
   exit(1);
 }
 
+
 int main(int, char**) {
 	signal(SIGSEGV, handler);
 	solve({6, 10});
