@@ -135,10 +135,6 @@ class NodeBase {
 		return column;
 	}
 
-	NodeColumn*& getColumnRef() {
-		return column;
-	}
-
 	std::ostream& show(std::ostream&);
 
 	protected:
@@ -178,6 +174,18 @@ class NodeColumn : public NodeBase {
 			return size;
 		}
 
+		int calculateSize() {
+			int counter = 0;
+			NodeBase* start(this);
+			NodeBase* runner(this->getDown());
+			while(runner != start) {
+				runner = runner->getDown();
+				counter++;
+			}
+			size = counter;
+			return counter;
+		}
+
 		void inline increaseSize() {
 			size++;
 		}
@@ -196,10 +204,6 @@ class NodeColumn : public NodeBase {
 		}
 
 		NodeColumn* getColumn() {
-			return column;
-		}
-
-		NodeColumn*& getColumnRef() {
 			return column;
 		}
 
@@ -273,7 +277,8 @@ class IncidenceMatrix {
 
 			NodeColumn* column = headerRow.firstNode->right;
 			while(column != headerRow.firstNode) {
-				if(column->size < min) minColumn = column;
+				column->calculateSize();
+				if(column->getSize() < min) minColumn = column;
 				column = column->right;
 			}
 			return minColumn;
@@ -294,7 +299,7 @@ class IncidenceMatrix {
 			addingNodeProcedure(row.lastNode);
 		}
 
-		void cover(NodeColumn*& column) {
+		void cover(NodeColumn* column) {
 			column->right->left = column->left;
 			column->left->right = column->right;
 			if(column == headerRow.lastNode) headerRow.lastNode = column->left;
@@ -304,12 +309,11 @@ class IncidenceMatrix {
 						rowTraverse = rowTraverse->right) {
 					rowTraverse->up->down = rowTraverse->down;
 					rowTraverse->down->up = rowTraverse->up;
-					// rowTraverse->column->decreaseSize();
 				}
 			}
 		}
 
-		void uncover(NodeColumn*& column) {
+		void uncover(NodeColumn* column) {
 			column->right->left = column;
 			column->left->right = column;
 			if(column->left == headerRow.lastNode) headerRow.lastNode = column;
@@ -319,7 +323,6 @@ class IncidenceMatrix {
 						rowTraverse = rowTraverse->left) {
 					rowTraverse->up->down = rowTraverse;
 					rowTraverse->down->up = rowTraverse;
-					// rowTraverse->column->increaseSize();
 				}
 			}
 		}
@@ -507,21 +510,20 @@ void applyKnuthAlgo(IncidenceMatrix& matrix, std::vector<NodeBase*>& solution, i
 		return;
 	};
 
-	// NodeColumn* column(matrix.findColumnWithLeastOnes());
 	NodeColumn* column(matrix.getHead()->getRight());
-	if(column->getSize() == 0) return;
+
 	matrix.cover(column);
 
 	for(NodeBase* row(column->getDown()); row != column; row = row->getDown()) {
 		solution[k] = row;
 		for(NodeBase* rowTraverse = row->getRight(); rowTraverse != row; rowTraverse = rowTraverse->getRight()) {
-			matrix.cover(rowTraverse->getColumnRef());
+			matrix.cover(rowTraverse->getColumn());
 		}
 
 		applyKnuthAlgo(matrix, solution, counter, k+1);
 
 		for(NodeBase* rowTraverse(row->getLeft()); rowTraverse != row; rowTraverse = rowTraverse->getLeft()) {
-			matrix.uncover(rowTraverse->getColumnRef());
+			matrix.uncover(rowTraverse->getColumn());
 		}
 	}
 	matrix.uncover(column);
