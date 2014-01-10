@@ -35,10 +35,11 @@ struct Pentomino {
 	explicit Pentomino(std::vector<std::pair<int, int>>&& vector) : cs(vector) {}
 
 	std::vector<std::pair<int, int>> cs; 
+	// serialiased means grid coordinates are represented as numbers
 	std::vector<int> serialise(std::pair<int, int> rectangle) {
 		std::vector<int> result;
 		for(auto pair : cs) {
-			result.push_back(pair.first  + rectangle.second * pair.second);
+			result.push_back(pair.first  + rectangle.first * pair.second);
 		}
 		std::sort(result.begin(), result.end());
 		return result;
@@ -514,16 +515,11 @@ class IncidenceMatrix {
 							}
 
 							Pentomino movedPentomino = pentomino.shift({x, y});
-							// serialiased means grid coordinates are represented as numbers
-							std::vector<int> shapeSerialised;
 							bool isFitted =
 								std::accumulate(movedPentomino.cs.begin(),
 									movedPentomino.cs.end(), true,
-									[this, &shapeSerialised](bool result,
+									[this](bool result,
 										std::pair<int, int>& pair) {
-									shapeSerialised.push_back(pair.first +
-										pair.second * rectangle.first);
-
 									return result && (pair.first > -1) 
 										&& (pair.second > -1) 
 										&& (pair.first < rectangle.first)
@@ -531,11 +527,10 @@ class IncidenceMatrix {
 									});
 							y++;
 							if(!isFitted) continue;
-
-							std::sort(shapeSerialised.begin(), shapeSerialised.end());
+							std::vector<int> shapeSerialised =
+								movedPentomino.serialise(rectangle);
 							addSerialisedNode(shapeSerialised, shape.first);
 							counter++;
-							//std::cout << list;
 						}
 						x++;
 					}
@@ -570,6 +565,7 @@ class IncidenceMatrix {
 			node->column = map[shapeName];
 			list.addRowNode(node);
 			addRow(list);
+			//std::cout << list;
 		}
 };
 
