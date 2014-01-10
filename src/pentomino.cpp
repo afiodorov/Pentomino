@@ -519,12 +519,15 @@ class IncidenceMatrix {
 							bool isFitted =
 								std::accumulate(movedPentomino.cs.begin(),
 									movedPentomino.cs.end(), true,
-										[this, &shapeSerialised](bool result, std::pair<int, int>& pair) {
-										shapeSerialised.push_back(pair.first + pair.second * rectangle.first);
+									[this, &shapeSerialised](bool result,
+										std::pair<int, int>& pair) {
+									shapeSerialised.push_back(pair.first +
+										pair.second * rectangle.first);
 
-										return result && (pair.first > -1) && (pair.second > -1)
-											&& (pair.first < rectangle.first)
-											&& (pair.second < rectangle.second);
+									return result && (pair.first > -1) 
+										&& (pair.second > -1) 
+										&& (pair.first < rectangle.first)
+										&& (pair.second < rectangle.second);
 									});
 							y++;
 							if(!isFitted) continue;
