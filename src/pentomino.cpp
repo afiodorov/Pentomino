@@ -514,6 +514,7 @@ class IncidenceMatrix {
 							}
 
 							Pentomino movedPentomino = pentomino.shift({x, y});
+							// serialiased means grid coordinates are represented as numbers
 							std::vector<int> shapeSerialised;
 							bool isFitted =
 								std::accumulate(movedPentomino.cs.begin(),
@@ -529,25 +530,7 @@ class IncidenceMatrix {
 							if(!isFitted) continue;
 
 							std::sort(shapeSerialised.begin(), shapeSerialised.end());
-							DoublyLinkedList<NodeBase> list;
-
-							std::unique_ptr<NodeBase[]> uArr(new NodeBase[6]); 
-							NodeBase* arr = uArr.get();
-							stackOfNodesArr.push(std::move(uArr));
-							int arrIndex = 0;
-							for_each(shapeSerialised.begin(), shapeSerialised.end(), 
-									[&list, this, &arrIndex, &arr](int& integer) {
-								std::string str = std::to_string(integer);
-								auto node = (arr + arrIndex++);
-
-								node->column = map[str];
-								list.addRowNode(node);
-							});
-
-							auto node = (arr + arrIndex);
-							node->column = map[shape.first];
-							list.addRowNode(node);
-							addRow(list);
+							addSerialisedNode(shapeSerialised, shape.first);
 							counter++;
 							//std::cout << list;
 						}
@@ -564,6 +547,28 @@ class IncidenceMatrix {
 				if(column->down == column) cover(column);
 			}
 		}
+
+		void addSerialisedNode(std::vector<int>& shapeSerialised, const
+				std::string& shapeName) {
+			DoublyLinkedList<NodeBase> list;
+			std::unique_ptr<NodeBase[]> uArr(new NodeBase[6]); 
+			NodeBase* arr = uArr.get();
+			stackOfNodesArr.push(std::move(uArr));
+			int arrIndex = 0;
+			for_each(shapeSerialised.begin(), shapeSerialised.end(), 
+					[&list, this, &arrIndex, &arr](int& integer) {
+				std::string str = std::to_string(integer);
+				auto node = (arr + arrIndex++);
+
+				node->column = map[str];
+				list.addRowNode(node);
+			});
+			auto node = (arr + arrIndex);
+			node->column = map[shapeName];
+			list.addRowNode(node);
+			addRow(list);
+		}
+
 		bool wasInsertedFirst(NodeColumn* first, NodeColumn* second) {
 			std::string firstName = first->column->name;
 
@@ -583,7 +588,8 @@ class IncidenceMatrix {
 		}
 };
 
-void applyKnuthAlgo(IncidenceMatrix& matrix, std::vector<NodeBase*>& solution, int& counter, int k=0, bool show = true) {
+void applyKnuthAlgo(IncidenceMatrix& matrix, std::vector<NodeBase*>& solution,
+		int& counter, bool show = true, int k=0) {
 	if(matrix.getHead()->isCircular()) {
 		if(show) {
 			for(auto row : solution) {
@@ -605,7 +611,7 @@ void applyKnuthAlgo(IncidenceMatrix& matrix, std::vector<NodeBase*>& solution, i
 			matrix.cover(rowTraverse->getColumn());
 		}
 
-		applyKnuthAlgo(matrix, solution, counter, k+1, show);
+		applyKnuthAlgo(matrix, solution, counter, show, k+1);
 
 		for(NodeBase* rowTraverse(row->getLeft()); rowTraverse != row; rowTraverse = rowTraverse->getLeft()) {
 			matrix.uncover(rowTraverse->getColumn());
@@ -622,7 +628,7 @@ void solve(std::pair<int,int> rectangle) {
 
 	int counter = 0;
 	auto solution = std::vector<NodeBase*>(rectangle.first*rectangle.second/5, nullptr);
-	applyKnuthAlgo(matrix, solution, counter, 0, true);
+	applyKnuthAlgo(matrix, solution, counter, true);
 
 	end = std::chrono::system_clock::now();
 
