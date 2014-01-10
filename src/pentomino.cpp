@@ -77,9 +77,9 @@ struct Pentomino {
 		return Pentomino(list);
 	}
 
-	Pentomino shift(std::pair<int, int> pair) {
+	Pentomino shift(std::pair<int, int> pair) const {
 		std::vector<std::pair<int, int>> list;
-		for_each(cs.begin(), cs.end(), [&pair, &list](std::pair<int, int>& in) {
+		for_each(cs.begin(), cs.end(), [&pair, &list](const std::pair<int, int>& in) {
 					list.push_back(std::pair<int, int>(in.first + pair.first,
 							in.second + pair.second));
 				});
