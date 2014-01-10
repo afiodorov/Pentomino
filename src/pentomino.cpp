@@ -571,24 +571,6 @@ class IncidenceMatrix {
 			list.addRowNode(node);
 			addRow(list);
 		}
-
-		bool wasInsertedFirst(NodeColumn* first, NodeColumn* second) {
-			std::string firstName = first->column->name;
-
-			auto secondName = second->column->name;
-			bool isFirstShape = pent::shapes.find(firstName) == pent::shapes.end();
-			bool isSecondShape = pent::shapes.find(secondName) == pent::shapes.end();
-			if(isFirstShape && isSecondShape) {
-				return firstName < secondName;
-			} else if (!isFirstShape && !isSecondShape) {
-				return std::atoi(firstName.c_str()) <
-					std::atoi(secondName.c_str());
-			} else if (!isFirstShape && isSecondShape) {
-				return true;
-			} else {
-				return false;
-			}
-		}
 };
 
 void applyKnuthAlgo(IncidenceMatrix& matrix, std::vector<NodeBase*>& solution,
