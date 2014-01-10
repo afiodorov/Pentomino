@@ -103,6 +103,46 @@ namespace pent {
 	static std::map<std::string, Pentomino> shapes = 
 	{{"X", X}, {"Z", Z}, {"I", I}, {"T", T}, {"U", U}, {"V", V}, {"W", W},
 		{"F", F}, {"L", L}, {"P", P}, {"N", N}, {"Y", Y}};
+
+		void generateAllShapes(const std::pair<std::string, Pentomino>& shape, 
+			std::stack<Pentomino>& stack) {
+			switch(str2int(shape.first.c_str())) {
+				case str2int("L"):
+					;
+				case str2int("N"):
+					;
+				case str2int("P"):
+					;
+				case str2int("F"):
+					;
+				case str2int("Y"):
+					stack.push(shape.second.flip());
+					stack.push(shape.second.flip().turn90());
+					stack.push(shape.second.flip().turn180());
+					stack.push(shape.second.flip().turn270());
+				case str2int("V"):
+					;
+				case str2int("W"):
+					;
+				case str2int("T"):
+					;
+				case str2int("U"):
+					stack.push(shape.second);
+					stack.push(shape.second.turn90());
+					stack.push(shape.second.turn180());
+					stack.push(shape.second.turn270());
+				break;
+
+				case str2int("Z"):
+					stack.push(shape.second.flip());
+					stack.push(shape.second.flip().turn90());
+				case str2int("I"):
+					stack.push(shape.second.turn90());
+				case str2int("X"):
+					stack.push(shape.second);
+				break;
+			}
+		}
 }
 
 
@@ -457,7 +497,7 @@ class IncidenceMatrix {
 			int counter = 0;
 			for(auto shape : pent::shapes) {
 				std::stack<Pentomino> stack;
-				generateAllShapes(shape, stack);
+				pent::generateAllShapes(shape, stack);
 
 				while(!stack.empty()) {
 					auto pentomino = stack.top();
@@ -524,47 +564,6 @@ class IncidenceMatrix {
 				if(column->down == column) cover(column);
 			}
 		}
-
-		void generateAllShapes(const std::pair<std::string, Pentomino>& shape, 
-			std::stack<Pentomino>& stack) {
-			switch(str2int(shape.first.c_str())) {
-				case str2int("L"):
-					;
-				case str2int("N"):
-					;
-				case str2int("P"):
-					;
-				case str2int("F"):
-					;
-				case str2int("Y"):
-					stack.push(shape.second.flip());
-					stack.push(shape.second.flip().turn90());
-					stack.push(shape.second.flip().turn180());
-					stack.push(shape.second.flip().turn270());
-				case str2int("V"):
-					;
-				case str2int("W"):
-					;
-				case str2int("T"):
-					;
-				case str2int("U"):
-					stack.push(shape.second);
-					stack.push(shape.second.turn90());
-					stack.push(shape.second.turn180());
-					stack.push(shape.second.turn270());
-				break;
-
-				case str2int("Z"):
-					stack.push(shape.second.flip());
-					stack.push(shape.second.flip().turn90());
-				case str2int("I"):
-					stack.push(shape.second.turn90());
-				case str2int("X"):
-					stack.push(shape.second);
-				break;
-			}
-		}
-
 		bool wasInsertedFirst(NodeColumn* first, NodeColumn* second) {
 			std::string firstName = first->column->name;
 
